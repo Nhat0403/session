@@ -47,12 +47,14 @@ exports.postLogin = async(req, res, next) => {
       { id: user._id, username: user.username },
       'your_secret_key'
     );
+    req.session.user = {
+      ...user._doc,
+      token: token
+    };
+    await req.session.save();
     return res.status(200).json({
       message: username + ' login success!',
-      data: {
-        ...user._doc,
-        token: token
-      }
+      data: req.session.user
     });
   } catch(err) {
     if(!err.statusCode) {
